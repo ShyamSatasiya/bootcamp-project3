@@ -42,10 +42,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  admin_ssh_key {
-    username   = var.admin_user
-    public_key = file(var.ssh_pub_key_path)
-  }
+  admin_password = var.admin_password
 }
 resource "azurerm_network_interface" "nic" {
   count               = var.vm_count

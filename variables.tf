@@ -21,8 +21,8 @@ variable "admin_user" {
   default     = "azureuser"
 }
 
-variable "ssh_pub_key_path" {
-  description = "Path to SSH public key"
+variable "admin_password" {
+  description = "Password for the Linux VM admin user (must meet Azure’s complexity requirements)"
   type        = string
-  default     = "ssh_keys/id_rsa.pub"
+  sensitive   = true
 }
