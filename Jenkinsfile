@@ -43,7 +43,7 @@ pipeline {
         bat '''
           terraform init ^
             -backend-config="resource_group_name=rg-tfstate" ^
-            -backend-config="storage_account_name=sttfstate8374" ^
+            -backend-config="storage_account_name=sttfstate3766" ^
             -backend-config="container_name=tfstate" ^
             -backend-config="key=%BRANCH_NAME%.tfstate" ^
             -reconfigure ^
