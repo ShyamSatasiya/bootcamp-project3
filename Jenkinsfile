@@ -15,7 +15,7 @@ pipeline {
     TF_VAR_tenant_id       = credentials('azure-tenant-id')
     TF_VAR_subscription_id = credentials('azure-subscription-id')
     TF_VAR_location        = 'canadacentral' 
-    TF_VAR_admin_password  = credentials('azure-vm-admin-password')          // or pull from a credential/string if you like
+              // or pull from a credential/string if you like
   }
 
   stages {
