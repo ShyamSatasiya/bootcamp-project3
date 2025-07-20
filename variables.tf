@@ -22,7 +22,7 @@ variable "admin_user" {
 }
 
 variable "ssh_pub_key_path" {
-  description = "Path to the SSH public key file"
+  description = "Path to SSH public key"
   type        = string
-  default     = "~/.ssh/id_rsa.pub"
+  default     = "ssh_keys/id_rsa.pub"
 }
