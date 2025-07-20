@@ -41,7 +41,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     sku       = "18.04-LTS"
     version   = "latest"
   }
-
+disable_password_authentication = false
   admin_password = var.admin_password
 }
 resource "azurerm_network_interface" "nic" {
