@@ -28,8 +28,34 @@ resource "azurerm_linux_virtual_machine" "vm" {
   network_interface_ids = [
     azurerm_network_interface.nic[count.index].id
   ]
+
+  os_disk {
+    name                 = "osdisk-${terraform.workspace}-${count.index}"
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+
   admin_ssh_key {
     username   = var.admin_user
     public_key = file(var.ssh_pub_key_path)
+  }
+}
+resource "azurerm_network_interface" "nic" {
+  count               = var.vm_count
+  name                = "nic-${terraform.workspace}-${count.index}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  ip_configuration {
+    name                          = "ipconfig-${count.index}"
+    subnet_id                     = azurerm_subnet.subnet.id
+    private_ip_address_allocation = "Dynamic"
   }
 }
