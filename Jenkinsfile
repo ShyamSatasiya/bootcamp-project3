@@ -81,15 +81,19 @@ pipeline {
     }
 
     stage('Apply') {
-      
-      steps {
-        // Safe re‑init (no -upgrade) then apply plan
-        bat """
-  terraform workspace select %ENV%
-  terraform init -input=false
-  terraform apply -input=false -auto-approve plan.tfplan
-"""
-      }
-    }
+  
+  steps {
+    bat '''
+      REM switch to—or create—the right workspace
+      terraform workspace select %ENV% || terraform workspace new %ENV%
+
+      REM re-init so Terraform knows which workspace we're in
+      terraform init -input=false
+
+      REM finally apply the generated plan
+      terraform apply -input=false -auto-approve plan.tfplan
+    '''
+  }
+}
   }
 }
