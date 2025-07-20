@@ -1,6 +1,10 @@
 pipeline {
   agent any
-
+ choice(
+    name: 'ENV',
+    choices: ['staging', 'production'],
+    description: 'Which environment to deploy'
+  )
   // 1. Pull in your SP creds as both AZ and TF_VAR_* vars
   environment {
     // Azure CLI / ARM backend auth
@@ -40,29 +44,27 @@ pipeline {
 
     stage('Init & Validate') {
       steps {
-        // First time only: reconfigure & upgrade plugins to pick up your required_providers block
-        bat '''
-          terraform init ^
-            -backend-config="resource_group_name=rg-tfstate" ^
-            -backend-config="storage_account_name=sttfstate3766" ^
-            -backend-config="container_name=tfstate" ^
-            -backend-config="key=%BRANCH_NAME%.tfstate" ^
-            -reconfigure ^
-            -upgrade ^
-            -input=false
-          terraform validate -no-color
-        '''
+        bat """
+  REM select or create the workspace for the chosen ENV
+  terraform workspace select %ENV% || terraform workspace new %ENV%
+  REM initialize backend to use a state file named after ENV
+  terraform init ^
+    -backend-config="key=%ENV%.terraform.tfstate" ^
+    -reconfigure -upgrade -input=false
+  terraform validate -no-color
+"""
       }
     }
 
     stage('Plan') {
       steps {
         // Plan non-interactively
-        bat '''
-          terraform plan ^
-            -input=false ^
-            -out=plan.tfplan
-        '''
+        bat """
+  terraform plan ^
+    -input=false ^
+    -var-file="%ENV%.tfvars" ^
+    -out=plan.tfplan
+"""
       }
       post {
         always {
@@ -75,10 +77,11 @@ pipeline {
       
       steps {
         // Safe re‑init (no -upgrade) then apply plan
-        bat '''
-          terraform init -input=false
-          terraform apply -input=false -auto-approve plan.tfplan
-        '''
+        bat """
+  terraform workspace select %ENV%
+  terraform init -input=false
+  terraform apply -input=false -auto-approve plan.tfplan
+"""
       }
     }
   }
