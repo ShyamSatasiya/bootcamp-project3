@@ -1,10 +1,17 @@
 pipeline {
   agent any
- choice(
+
+  parameters {
+     choice(
     name: 'ENV',
     choices: ['staging', 'production'],
     description: 'Which environment to deploy'
   )
+    }
+    // 0. Choose the environment to deploy
+    //    This will create a new Terraform workspace for the chosen ENV
+    //    and use a state file named after ENV (e.g., staging.terraform.tfstate)
+
   // 1. Pull in your SP creds as both AZ and TF_VAR_* vars
   environment {
     // Azure CLI / ARM backend auth
