@@ -1,10 +1,10 @@
 pipeline {
   agent any
   environment {
-    ARM_CLIENT_ID       = credentials('azure-sp-client-id')
-    ARM_CLIENT_SECRET   = credentials('azure-sp-client-secret')
-    ARM_TENANT_ID       = credentials('azure-sp-tenant-id')
-    ARM_SUBSCRIPTION_ID = credentials('azure-sp-subscription-id')
+    ARM_CLIENT_ID       = credentials('azure-client-id')
+    ARM_CLIENT_SECRET   = credentials('azure-client-secret')
+    ARM_TENANT_ID       = credentials('azure-tenant-id')
+    ARM_SUBSCRIPTION_ID = credentials('azure-subscription-id')
   }
   stages {
     stage('Checkout') {
@@ -12,13 +12,13 @@ pipeline {
     }
     stage('Init & Validate') {
       steps {
-        sh 'terraform init -backend-config="key=${env.BRANCH_NAME}.tfstate"'
-        sh 'terraform validate'
+        bat 'terraform init -backend-config="key=${env.BRANCH_NAME}.tfstate"'
+        bat 'terraform validate'
       }
     }
     stage('Plan') {
       steps {
-        sh 'terraform plan -var-file="terraform.tfvars" -out=plan.tfplan'
+        bat 'terraform plan -var-file="terraform.tfvars" -out=plan.tfplan'
       }
       post {
         always {
@@ -29,8 +29,8 @@ pipeline {
     stage('Apply') {
   when { expression { params.DEPLOY == 'true' } }
   steps {
-    sh 'terraform init'
-    sh 'terraform apply -auto-approve plan.tfplan'
+    bat 'terraform init'
+    bat 'terraform apply -auto-approve plan.tfplan'
   }
 }
 
