@@ -72,7 +72,7 @@ pipeline {
     }
 
     stage('Apply') {
-      when { expression { params.DEPLOY == 'true' } }
+      
       steps {
         // Safe re‑init (no -upgrade) then apply plan
         bat '''
